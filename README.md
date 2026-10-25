@@ -1,2 +1,67 @@
-# snow-mountain-zhang
-电控组第二次招新培训作业
+# 电控组第二次培训作业
+- **贾政**
+- ***20263001720***
+
+在CubeMX中将A0命名为LED0，将A3命名为LED1,将A7命名为LED2
+生成了宏定义：
+```
+#define LED0_Pin GPIO_PIN_0
+#define LED0_GPIO_Port GPIOA
+#define LED1_Pin GPIO_PIN_3
+#define LED1_GPIO_Port GPIOA
+#define LED2_Pin GPIO_PIN_7
+#define LED2_GPIO_Port GPIOA
+```
+
+首先定义
+```
+#define LED_0 0
+#define LED_1 1
+#define LED_2 2
+```
+定义lastTick记录上一次切换LED的时间，定义step记录当前的状态
+初始 此时时间为0，LED0亮，step==LED_0
+```
+  uint32_t lastTick=0;
+  uint8_t step = LED_0;
+  HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+```
+通过HAL_GetTick()获取现在的时间
+```
+uint32_t currentTick=HAL_GetTick()
+```
+判断现在与上一次的时间差是否大于等于500ms
+```
+if (currentTick-lastTick>=500)
+```
+条件满足，则更新触发时间
+```
+lastTick=currentTick
+```
+然后根据当前step切换对应的LED状态
+```
+if (LED_0==step)
+      {
+        HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+        step=LED_1;
+      }
+      else if (LED_1==step)
+      {
+        HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+        step=LED_2;
+      }
+      else if (LED_2==step)
+      {
+        HAL_GPIO_WritePin(LED0_GPIO_Port, LED0_Pin, GPIO_PIN_SET);
+        HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+        HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+        step=LED_0;
+      }
+```
+只要时间差没有达到500ms，cpu会略过这段代码去执行循环中的其他任务，摆脱了HAL_Delay()死等的方式，实现非阻塞延时
