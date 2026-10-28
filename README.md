@@ -2,7 +2,8 @@
 - **贾政**
 - ***20263001720***
 
-在CubeMX中将A0命名为LED0，将A3命名为LED1,将A7命名为LED2
+流水灯实现思路：
+在CubeMX中将A0命名为LED0，将A3命名为LED1,将A7命名为LED2，并配置为‘GPIO_Output’
 生成了宏定义：
 ```
 #define LED0_Pin GPIO_PIN_0
@@ -12,7 +13,9 @@
 #define LED2_Pin GPIO_PIN_7
 #define LED2_GPIO_Port GPIOA
 ```
-
+定义一个变量‘step’记录当前亮灯的状态，通过‘if-else’分支判断当前状态，将引脚输出设置为高电平以点亮LED，设置为低电平以熄灭LED，随后更新‘step’进入下一个阶段
+非阻塞延时原理说明；
+基于‘HAL_GetTick()’函数实现了时间戳差值法
 首先定义
 ```
 #define LED_0 0
