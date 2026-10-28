@@ -39,7 +39,7 @@
 ```
 通过`HAL_GetTick()`获取现在的时间
 ```c
-uint32_t currentTick=HAL_GetTick()
+uint32_t currentTick=HAL_GetTick();
 ```
 判断现在与上一次的时间差是否大于等于500ms
 ```c
@@ -47,7 +47,7 @@ if (currentTick-lastTick>=500)
 ```
 条件满足，则更新触发时间
 ```c
-lastTick=currentTick
+lastTick=currentTick;
 ```
 然后根据当前step切换对应的LED状态
 ```c
